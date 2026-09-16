@@ -23,7 +23,7 @@ const server=http.createServer((req,res)=>{const key=new URL(req.url,'http://loc
 await new Promise(r=>server.listen(0,'127.0.0.1',r));
 const results=[];
 try{
- for(const kind of ['plain','viewer'])for(const protocol of ['file','http'])for(const clearAt of ['new-document','loaded'])for(let trial=0;trial<4;trial++){
+ for(const kind of ['viewer'])for(const protocol of ['file'])for(const clearAt of ['protocol'])for(let trial=0;trial<20;trial++){
   const result={kind,protocol,clearAt,trial,reads:[]};const browser=new ChromeVisualBrowser(findChrome());
   try{
    const session=await browser.sessionPromise;const send=(method,params={})=>browser.cdp.send(method,params,session,30000);
@@ -35,6 +35,7 @@ try{
    async function load(mode,{reload=false}={}){
     const expected=++generation;
     if(!reload){const name=kind+'-'+mode+'.html';currentUrl=(protocol==='file'?pathToFileURL(path.join(scratch,name)).href:`http://127.0.0.1:${server.address().port}/${name}`)+'?theme=dark&testNavigation='+expected;}
+    if(!reload&&clearAt==='protocol')await send('Storage.clearDataForStorageKey',{storageKey:'file:///',storageTypes:'local_storage'});
     if(startup)await send('Page.removeScriptToEvaluateOnNewDocument',{identifier:startup});
     ({identifier:startup}=await send('Page.addScriptToEvaluateOnNewDocument',{source:`if(location.href===${JSON.stringify(currentUrl)}){window.probeGeneration=${expected};${!reload&&clearAt==='new-document'?"localStorage.removeItem('archify-motion');":''}}`}));
     const loaded=browser.cdp.waitFor('Page.loadEventFired',session);
