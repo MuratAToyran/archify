@@ -8,6 +8,9 @@
 
 ![Archify product preview](docs/assets/archify-readme-hero.png)
 
+# Bu video sayesinde geldim
+https://www.youtube.com/shorts/iIU6zjSBgcQ
+
 # Archify
 
 **Turn a codebase or system description into a polished, interactive system map — directly in chat.**
